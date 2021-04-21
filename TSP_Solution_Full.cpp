@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 //constant for the number of cities
@@ -61,7 +63,7 @@ void makeMatrix(string name[], int mat[][NOC]){
 }
 
 void printGraph(int mat[][NOC]){
-	cout<<"\nBelow is the adjaceny matrix for the cities graph: \n";
+	cout<<"\nBelow is the adjaceny matrix for the cities graph: \n\n";
 	for (int y = 0; y < NOC; y++){
 		//outputs the matrix
 		for (int z = 0; z < NOC; z++){
@@ -103,7 +105,7 @@ int kMST(int mdarray[][NOC],int arr[],int first[],int second[],int weight[]){
 			}
 		}
 		unify(a,b,arr);
-		cout<<"Edge"<< edges <<": "<<a<<" , "<<b<<" -> Cost: "<<min<<endl;
+		cout<<"Edge "<< edges <<": "<<a<<" , "<<b<<" -> Cost: "<<min<<endl;
 		
 		first[edges]=a;
 		second[edges]=b;
@@ -143,12 +145,56 @@ void eulerTour(int out[], int df[], int path[]){
 }
 
 void printTSP(int c, int fw, int fpath[], int mat[][NOC], string name[]){
-	cout<<"Final path: "<<fpath[0]<<" = "<<name[0]<<endl<<endl;
+	cout<<"Path: "<<fpath[0]<<" = "<<name[0]<<endl<<endl;
 	for(int final = 1; final < c; final++){
 		fw += mat[fpath[final-1]][fpath[final]];
-		cout<<"Final path: "<<fpath[final]<<" = "<<name[fpath[final]]<<".\nEdge "<<final-1<<" weight = "<<mat[fpath[final-1]][fpath[final]]<<endl<<endl;
+		cout<<"Path: "<<fpath[final]<<" = "<<name[fpath[final]]<<".\nEdge "<<
+			final-1<<": weight = "<<mat[fpath[final-1]][fpath[final]]<<endl<<endl;
 	}
-	cout<<"\nThe final traversal cost = "<<fw;
+	cout<<"\nThe traversal cost = "<<fw;
+}
+
+//-----------------------------------------------------TSP Optimal Algorithm
+
+int optTSP(int mat[][NOC], int c, int pth[]){
+	vector<int> vec;
+	
+	//fills the vector vec with all indexes of the matrix except the start value c
+	for (int i = 0; i < NOC; i++){
+		if (i != c)
+			vec.push_back(i);   	
+	}
+	
+	int minw = INT_MAX; // store minimum weight of a graph
+	pth[0] = c;
+	do{
+		int cweight = 0;
+		int k = c;
+		
+		for (int i = 0; i < vec.size(); i++){
+			cweight += mat[k][vec[i]];
+			k = vec[i];
+			//cout<<"vec: "<<k<<endl;
+		}
+		
+		if(cweight<=minw){
+			for (int i = 0; i < vec.size(); i++){
+				k = vec[i];
+				pth[i+1] = k;
+			}
+		}
+	
+		//cout<<endl;
+		pth[NOC-1] = k;
+		
+		cweight += mat[k][c];
+		minw = min(minw, cweight); // to update the value of minimum weight
+	}
+	
+	//checks for all permutations of the vector vec
+	while (next_permutation(vec.begin(), vec.end()));
+	
+	return minw;
 }
 
 //-------------------------------------------------------------------------main function----------------------------------------------------------
@@ -167,11 +213,11 @@ int main(){
 	int second[NOC-1];
 	int weight[NOC-1];
 	
-	cout<<endl;
+	cout<<endl<<"The edges of the MST are:\n\n";
 	
 	int tcost = kMST(cities,head,first,second,weight);
 	
-	cout<<"\n\nMST weight = "<<tcost<<endl<<endl;
+	cout<<"\nMST weight = "<<tcost<<endl<<endl;
 	
 	//TSP Approximation
 	int dfirst[(NOC-1)*2];
@@ -204,11 +250,30 @@ int main(){
 		}
 	}
 	
+	cout<<"\n\n--------------------------------------------------------------\n"<<
+			"The path derived by the 2-opt approximation algorithm is:\n"<<
+			"--------------------------------------------------------------\n\n";
 	printTSP(check,fweight,fpath,cities,city);
+	
+	//Optimal TSP Solution
+	int optimalpath[NOC];
+	int start = 0;
+	int optweight = optTSP(cities, start, optimalpath);
+	
+	cout<<"\n\n\n--------------------------------------------------------------\n"<<
+			"The path derived by the optimal approximation algorithm is:\n"<<
+			"--------------------------------------------------------------\n\n";
+	for(int i = 0;i<NOC+1;i++){
+		cout<<"Path: "<<optimalpath[i]<<" = "<<city[optimalpath[i]]<<".\n";
+		if(i>0){
+			cout<<"Edge "<<i-1<<": weight = "<<cities[optimalpath[i-1]][optimalpath[i]]<<endl<<endl;
+		}
+		else{
+			cout<<endl;
+		}
+	}
+	
+	cout<<"\nThe traversal cost = "<<optweight<<endl;
 	
 	return 0;
 }
-
-
-
-
