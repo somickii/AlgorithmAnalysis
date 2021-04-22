@@ -8,59 +8,7 @@ using namespace std;
 //constant for the number of cities
 const int NOC = 5;
 
-//--------------------------------------------------------------------graph functions--------------------------------------------------------------------
-
-void makeMatrix(string name[], int mat[][NOC]){
-	cout<<"Enter Below 5 cities \n\n";
-	
-	for (int x = 0; x < NOC; x++){
-		//prompts for city name entries
-		cout<<"Enter city "<<x+1<<" (do NOT use spaces):\n";
-		cin>>name[x];
-	}
-	
-	cout<<"\n\nBelow are the cities: \n";
-	
-	
-	for (int a = 0; a < NOC; a++){
-		
-		for (int b = a; b < NOC; b++){
-			int assign;
-			
-			if(b == a){
-				assign = 0;
-				mat[a][b] = assign;
-				continue;
-			}
-			
-			//pseudorandom generation of weights for each edge
-			else{
-				assign = 1 + rand() % NOC*2;
-				
-				//creating a metric graph
-				if(a>0){
-					for(int c = 0; c < b-2; c++){
-						if(c==a || mat[a][c] + assign >= mat[c][b]){
-							continue;
-						}
-						else{
-							assign += mat[c][b];
-						}
-					}
-				}
-			}
-				
-			
-			//this matrix represents an undirected graph
-			mat[a][b] = assign;
-			mat[b][a] = assign;
-			
-		}
-		
-		//ouputs the name of the cities
-		cout<<" -"<<name[a]<<endl;
-	}
-}
+//--------------------------------------------------------------------graph function--------------------------------------------------------------------
 
 void printGraph(int mat[][NOC]){
 	cout<<"\nBelow is the adjaceny matrix for the cities graph: \n\n";
@@ -136,11 +84,9 @@ void doubleTree(int f[], int s[], int df[], int ds[], int w[], int pw[]){
 void eulerTour(int out[], int df[], int path[]){
 	for(int i = 0; i < (NOC-1)*2; i++){
 		out[df[i]]++;
-	}
-	
-	for(int i = 0; i < (NOC-1)*2; i++){
 		path[i] = df[i];
 	}
+	
 	path[(NOC-1)*2] = df[0];
 }
 
@@ -174,7 +120,6 @@ int optTSP(int mat[][NOC], int c, int pth[]){
 		for (int i = 0; i < vec.size(); i++){
 			cweight += mat[k][vec[i]];
 			k = vec[i];
-			//cout<<"vec: "<<k<<endl;
 		}
 		
 		if(cweight<=minw){
@@ -184,7 +129,6 @@ int optTSP(int mat[][NOC], int c, int pth[]){
 			}
 		}
 	
-		//cout<<endl;
 		pth[NOC-1] = k;
 		
 		cweight += mat[k][c];
@@ -202,9 +146,21 @@ int optTSP(int mat[][NOC], int c, int pth[]){
 int main(){
 	//create adjacency matrix for metric graph
 	string city[NOC];
-	int cities[NOC][NOC];
 	
-	makeMatrix(city,cities);
+	for (int x = 0; x < NOC; x++){
+		//prompts for city name entries
+		cout<<"Enter city "<<x+1<<" (do NOT use spaces):\n";
+		cin>>city[x];
+	}
+	
+	int cities[NOC][NOC]={
+		{0,6,7,3,6},
+		{6,0,7,9,1},
+		{7,7,0,4,7},
+		{3,9,4,0,3},
+		{6,1,7,3,0}
+	};
+	
 	printGraph(cities);
 	
 	//create kruskal's algorithm-based MST for the graph
@@ -223,8 +179,13 @@ int main(){
 	int dfirst[(NOC-1)*2];
 	int dsecond[(NOC-1)*2];
 	
-	int out[NOC]={0,0,0,0,0};
-	bool visited[NOC]={false,false,false,false,false};
+	int out[NOC];
+	bool visited[NOC];
+	
+	for(int i=0;i<NOC;i++){
+		out[i] = 0;
+		visited[i] = false;
+	}
 	
 	int path[(NOC*2)-1];
 	int pweight[(NOC*2)-1];
