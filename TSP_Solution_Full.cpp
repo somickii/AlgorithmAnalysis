@@ -5,15 +5,10 @@
 #include <algorithm>
 using namespace std;
 
-//Potential new metric graphs (/delta graphs/euclidean-metric graph ... whatever)
-//https://cs.stackexchange.com/questions/100618/christofides-algorithm-by-hand-suboptimal-solution-is-it-my-fault
-//https://cs.stackexchange.com/questions/77461/msts-in-christofides-algorithm (used)
-
 //constant for the number of cities
-//const int NOC = 5;
-const int NOC = 6;
+const int NOC = 5;
 
-//--------------------------------------------------------------------graph function--------------------------------------------------------------------
+//--------------------------------------------------------------------print graph function--------------------------------------------------------------------
 
 void printGraph(int mat[][NOC]){
 	cout<<"\nBelow is the adjaceny matrix for the cities graph: \n\n";
@@ -150,25 +145,14 @@ int optTSP(int mat[][NOC], int c, int pth[]){
 int main(){
 	//create adjacency matrix for metric graph
 	
-//	string city[NOC]={"Kingston","Montego_Bay","Mandeville","Spanish_Town","Falmouth"};
-	string city[NOC]={"Zeroeth","First","Second","Third","Fourth","Fifth"};
-
+	string city[NOC]={"Kingston","Montego_Bay","Mandeville","Spanish_Town","Falmouth"};
 	
-//	int cities[NOC][NOC]={
-//		{0,6,7,3,6},
-//		{6,0,7,9,1},
-//		{7,7,0,4,7},
-//		{3,9,4,0,3},
-//		{6,1,7,3,0}
-//	};
-
 	int cities[NOC][NOC]={
-		{0,11,9,9,16,15},
-		{11,0,14,10,15,10},
-		{9,14,0,6,11,13},
-		{9,10,6,0,10,9},
-		{16,15,11,10,0,8},
-		{15,10,13,9,8,0}
+		{0,6,7,3,6},
+		{6,0,7,9,1},
+		{7,7,0,4,7},
+		{3,9,4,0,3},
+		{6,1,7,3,0}
 	};
 	
 	printGraph(cities);
@@ -229,8 +213,7 @@ int main(){
 	
 	//Optimal TSP Solution
 	int optimalpath[NOC+1];
-//	int start = 1;
-	int start = 2;
+	int start = 1;
 	int optweight = optTSP(cities, start, optimalpath);	//checks all possible paths for the lowest cost path
 														//returns optimal path weight
 	
@@ -249,5 +232,6 @@ int main(){
 	
 	cout<<"\nThe traversal cost = "<<optweight<<endl;
 	
+	system("pause");
 	return 0;
 }
